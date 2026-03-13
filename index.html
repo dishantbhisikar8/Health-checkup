@@ -692,20 +692,29 @@
             }
 
             /* header */
-            .brand {
+            /* .brand {
                 flex-direction: column;
                 align-items: flex-start;
+                gap: 10px;
+            } */
+
+            .brand {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
                 gap: 10px;
             }
 
             .app-logo {
-                height: 72px;
+                /* height: 72px; */
+                height: 60px;
                 width: auto;
             }
 
             #themeToggle {
-                align-self: flex-end;
-                font-size: 13px;
+                /* align-self: flex-end; */
+                font-size: 12px;
                 padding: 6px 10px;
             }
 
@@ -748,7 +757,7 @@
 
             /* buttons */
             .btn {
-                width: 100%;
+                width: 90%;
                 justify-content: center;
                 font-size: 14px;
                 padding: 12px;
@@ -982,15 +991,24 @@
                     </div>
 
                     <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
-                        <button class="btn btn-ghost" id="downloadPdfBtn">Download PDF Report</button>
-                        <button class="btn btn-ghost" id="closeOverlay">Close</button>
+                        <!-- <button class="btn btn-ghost" id="downloadPdfBtn">Download PDF Report</button> -->
+                        <!-- <button class="btn btn-ghost" id="closeOverlay">Close</button> -->
                     </div>
                 </div>
 
                 <div class="result-right">
+
+
+                    <div style="margin-top:16px;display:flex;gap:8px;flex-direction:column">
+                        <button class="btn btn-primary" id="activateRightBtn">SignUp - Into Vault</button>
+                        <div id="sentConfirmations" style="margin-top:8px;font-size:13px;color:var(--muted)"></div>
+                    </div>
+
+
+
                     <div style="display:flex;align-items:center;justify-content:space-between">
                         <div style="font-weight:700">Instant Reward</div>
-                        <div class="small muted-sm">Free coins (cap 200)</div>
+                        <!-- <div class="small muted-sm">Free coins (cap 200)</div> -->
                     </div>
                     <div style="margin-top:12px" class="coin-roller" id="coinRoll">+100 ₹C</div>
 
@@ -1006,10 +1024,10 @@
                     </div>
 
                     <!-- Single Activate button under Instant Reward -->
-                    <div style="margin-top:16px;display:flex;gap:8px;flex-direction:column">
+                    <!-- <div style="margin-top:16px;display:flex;gap:8px;flex-direction:column">
                         <button class="btn btn-primary" id="activateRightBtn">SignUp - Into Vault</button>
                         <div id="sentConfirmations" style="margin-top:8px;font-size:13px;color:var(--muted)"></div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -1352,7 +1370,7 @@
             else lines.push("<strong>Savings:</strong> Strong savings habit. Deploy into diversified equity for long-term growth.");
             if (inv < 40) lines.push("<strong>Invest:</strong> Start small SIPs (₹500–2000). Diversify across large-cap and balanced funds.");
             else lines.push("<strong>Invest:</strong> Rebalance annually; use goal-based SIPs for child/retirement goals.");
-            lines.push("<em>Activate Wealth Chamber to get +100 ₹C .</em>");
+            lines.push("<em>Activate Wealth Chamber to get +100 ₹C . Download the detail PDF report.</em>");
             return lines.map(l => `<div style="margin-bottom:8px">${l}</div>`).join('');
         }
         function animateCoinRoll(target) {
@@ -1398,28 +1416,35 @@
         });
 
         /* Download PDF button preserved */
-        document.getElementById('downloadPdfBtn').addEventListener('click', async function () {
-            const reportNode = document.createElement('div');
-            reportNode.style.width = '800px'; reportNode.style.padding = '18px'; reportNode.style.background = '#071026'; reportNode.style.color = '#e6eef6'; reportNode.style.fontFamily = 'Inter, Arial, sans-serif';
-            const fa = estAge.textContent || '—';
-            const savings = document.getElementById('savingsScore').textContent;
-            const prot = document.getElementById('protScore').textContent;
-            const inv = document.getElementById('invScore').textContent;
-            const answersHtml = Object.keys(answers).sort((a, b) => Number(a) - Number(b)).map(k => {
-                const q = QUESTIONS.find(x => x.id == k);
-                let val = answers[k];
-                if (q.type === 'slider') { const labels = q.labels || q.opts; val = labels[answers[k]] || answers[k]; }
-                else { val = Array.isArray(answers[k]) ? answers[k].join(', ') : answers[k] || '—'; }
-                return `<div><strong>${q.q}</strong><div style="color:#9aa4b2;margin-top:6px">${val}</div></div>`;
-            }).join('<br>');
-            const flagsList = [];
-            if (flags.no_health) flagsList.push('No Health Insurance for family');
-            if (flags.low_emergency) flagsList.push('Emergency fund < 3 months');
-            if (flags.high_debt) flagsList.push('High EMI burden (>30% or >50%)');
-            if (flags.no_term) flagsList.push('No Term Insurance');
-            const flagsHtml = flagsList.length ? flagsList.map(f => `• ${f}`).join('<br>') : 'No critical gaps flagged.';
-            const ledgerHtml = vaultState.ledger.length ? vaultState.ledger.map(l => `${new Date(l.ts).toLocaleString()} — ${l.type === 'credit' ? '+' : ''}-${l.amount} ₹C — ${l.reason}`).join('<br>') : 'No transactions yet';
-            reportNode.innerHTML = `
+        // document.getElementById('downloadPdfBtn').addEventListener('click', async function () {
+
+        /* Download PDF Button (optional) */
+        const downloadBtn = document.getElementById("downloadPdfBtn");
+
+        if (downloadBtn) {
+            downloadBtn.addEventListener("click", async function () {
+
+                const reportNode = document.createElement('div');
+                reportNode.style.width = '800px'; reportNode.style.padding = '18px'; reportNode.style.background = '#071026'; reportNode.style.color = '#e6eef6'; reportNode.style.fontFamily = 'Inter, Arial, sans-serif';
+                const fa = estAge.textContent || '—';
+                const savings = document.getElementById('savingsScore').textContent;
+                const prot = document.getElementById('protScore').textContent;
+                const inv = document.getElementById('invScore').textContent;
+                const answersHtml = Object.keys(answers).sort((a, b) => Number(a) - Number(b)).map(k => {
+                    const q = QUESTIONS.find(x => x.id == k);
+                    let val = answers[k];
+                    if (q.type === 'slider') { const labels = q.labels || q.opts; val = labels[answers[k]] || answers[k]; }
+                    else { val = Array.isArray(answers[k]) ? answers[k].join(', ') : answers[k] || '—'; }
+                    return `<div><strong>${q.q}</strong><div style="color:#9aa4b2;margin-top:6px">${val}</div></div>`;
+                }).join('<br>');
+                const flagsList = [];
+                if (flags.no_health) flagsList.push('No Health Insurance for family');
+                if (flags.low_emergency) flagsList.push('Emergency fund < 3 months');
+                if (flags.high_debt) flagsList.push('High EMI burden (>30% or >50%)');
+                if (flags.no_term) flagsList.push('No Term Insurance');
+                const flagsHtml = flagsList.length ? flagsList.map(f => `• ${f}`).join('<br>') : 'No critical gaps flagged.';
+                const ledgerHtml = vaultState.ledger.length ? vaultState.ledger.map(l => `${new Date(l.ts).toLocaleString()} — ${l.type === 'credit' ? '+' : ''}-${l.amount} ₹C — ${l.reason}`).join('<br>') : 'No transactions yet';
+                reportNode.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
       <div><h2 style="margin:0">Paisabada — Financial Health Report</h2><div style="color:#9aa4b2;margin-top:6px">Date: ${new Date().toLocaleString()}</div></div>
       <div style="text-align:right"><div style="font-weight:800;font-size:22px">${fa} (Financial Age)</div><div style="color:#9aa4b2">Total Vault: ${vaultState.balance} ₹C</div></div>
@@ -1434,18 +1459,19 @@
     <div style="margin-bottom:12px"><div style="font-weight:700;margin-bottom:6px">Your Answers</div><div style="color:#9aa4b2">${answersHtml}</div></div>
     <div style="margin-bottom:12px"><div style="font-weight:700;margin-bottom:6px">Vault Ledger</div><div style="color:#9aa4b2">${ledgerHtml}</div></div>
     <div style="margin-top:18px;color:#9aa4b2;font-size:12px">Notes: Coins are internal credits usable within Paisabada. For personalised planning, activate your Wealth Chamber.</div>`;
-            try {
-                const canvas = await html2canvas(reportNode, { scale: 2, backgroundColor: '#071026' });
-                const imgData = canvas.toDataURL('image/png');
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: [canvas.width, canvas.height] });
-                pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-                pdf.save('Paisabada-Financial-Report.pdf');
-                showToast('PDF downloaded');
-            } catch (e) {
-                alert('PDF generation failed: ' + e.message);
-            }
-        });
+                try {
+                    const canvas = await html2canvas(reportNode, { scale: 2, backgroundColor: '#071026' });
+                    const imgData = canvas.toDataURL('image/png');
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: [canvas.width, canvas.height] });
+                    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+                    pdf.save('Paisabada-Financial-Report.pdf');
+                    showToast('PDF downloaded');
+                } catch (e) {
+                    alert('PDF generation failed: ' + e.message);
+                }
+            });
+        }
         function actionTextForPdf() { if (flags.no_health) return 'Buy family health cover (₹3–5L).'; if (flags.low_emergency) return 'Start emergency SIP: aim 3 months expenses.'; if (flags.high_debt) return 'Review loans; prioritise high-interest payoff.'; if (flags.no_term) return 'Purchase term insurance 10–15x income.'; return 'Automate SIPs and set goal-based allocations.'; }
         function showToast(msg) { const t = document.createElement('div'); t.textContent = msg; t.style.position = 'fixed'; t.style.right = '18px'; t.style.bottom = '18px'; t.style.background = 'linear-gradient(90deg,var(--accentA),var(--accentB))'; t.style.color = '#071026'; t.style.padding = '10px 14px'; t.style.borderRadius = '10px'; t.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)'; document.body.appendChild(t); setTimeout(() => t.style.opacity = '0', 2400); setTimeout(() => t.remove(), 3000); }
 
@@ -1671,12 +1697,36 @@
         }
 
         /* Prevent accidental background scroll when overlays up */
-        document.getElementById('closeOverlay').addEventListener('click', () => {
-            document.getElementById('resultOverlay').classList.remove('active');
-            document.getElementById('resultOverlay').setAttribute('aria-hidden', 'true');
-            document.documentElement.style.overflow = '';
-            document.body.style.overflow = '';
-        });
+        // document.getElementById('closeOverlay').addEventListener('click', () => {
+        //     document.getElementById('resultOverlay').classList.remove('active');
+        //     document.getElementById('resultOverlay').setAttribute('aria-hidden', 'true');
+        //     document.documentElement.style.overflow = '';
+        //     document.body.style.overflow = '';
+        // });
+
+        /* =========================
+CLOSE OVERLAY BUTTON
+========================= */
+
+        const closeBtn = document.getElementById("closeOverlay");
+
+        if (closeBtn) {
+
+            closeBtn.addEventListener("click", function () {
+
+                const overlay = document.getElementById("resultOverlay");
+
+                if (overlay) {
+                    overlay.classList.remove("active");
+                    overlay.setAttribute("aria-hidden", "true");
+
+                    document.documentElement.style.overflow = "auto";
+                    document.body.style.overflow = "auto";
+                }
+
+            });
+
+        }
 
         /* Small helpers kept above */
 
@@ -1704,5 +1754,3 @@ DARK/LIGHT MODE TOGGLE
 </body>
 
 </html>
-
-
